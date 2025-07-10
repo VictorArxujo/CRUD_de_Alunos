@@ -25,11 +25,21 @@ router.post("/", async (req, res) => {
 
 router.get("/", async (req, res) => {
   try {
-    const people = await Aluno.find();
-    console.log("Dados Recebidos");
-    res.status(200).json({ message: people });
+    
+    const { name, ra } = req.query;
+    //Monta um objeto de filtro
+    const filter = {};
+    if (name) {
+      filter.name = { $regex: new RegExp(name, "i") };
+    }
+    if (ra) {
+      filter.ra = ra;
+    }
+
+    const alunos = await Aluno.find(filter);
+    res.status(200).json(alunos);
   } catch (error) {
-    res.status(500).json({ message: error });
+    res.status(500).json({ error: error.message });
   }
 });
 
