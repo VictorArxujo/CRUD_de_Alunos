@@ -1,0 +1,88 @@
+const router = require("express").Router();
+const Aluno = require("../models/Aluno");
+
+router.post("/", async (req, res) => {
+  const { name, age, ra, cpf } = req.body;
+
+  if (!name || !age || !ra || !cpf) {
+    res.status(422).json({ message: "Ensira todos os campos" });
+  }
+
+  const aluno = {
+    name,
+    age,
+    ra,
+    cpf,
+  };
+
+  try {
+    await Aluno.create(aluno);
+    res.status(201).json({ message: "Criei um novo Aluno" });
+  } catch (error) {
+    res.status(500).json({ message: error });
+  }
+});
+
+router.get("/", async (req, res) => {
+  try {
+    const people = await Aluno.find();
+    console.log("Dados Recebidos");
+    res.status(200).json({ message: people });
+  } catch (error) {
+    res.status(500).json({ message: error });
+  }
+});
+
+router.get("/:id", async (req, res) => {
+  const id = req.params.id;
+  try {
+    const aluno = await Aluno.findOne({ _id: id });
+    if (!aluno) {
+      res.status(404).json({ message: "Nenhum aluno encontrado" });
+      return;
+    } else {
+      res.status(200).json({ message: aluno });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error });
+  }
+});
+
+router.patch("/:id", async (req, res) => {
+  console.log("Entre na requisição");
+  const id = req.params.id;
+  const { name, age, ra, cpf } = req.body;
+  const aluno = {
+    name,
+    age,
+    ra,
+    cpf,
+  };
+
+  try {
+    const updateAluno = await Aluno.updateOne({ _id: id }, aluno);
+    if (updateAluno.matchedCount === 0) {
+      res.status(422).json({ message: "O usuário não foi encontrado" });
+    } else {
+      res.status(200).json({ message: aluno });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error });
+  }
+});
+
+router.delete("/:id", async (req, res) => {
+  const id = req.params.id;
+  const aluno = await Aluno.findOne({ _id: id });
+  if (!aluno) {
+    res.status(404).json({ message: "Nenhum aluno encontrado" });
+  }
+  try {
+    await Aluno.deleteOne({ _id: id }, aluno);
+    res.status(200).json({ message: "Usuário Deletado Com Sucesso" });
+  } catch (error) {
+    res.status(500).json({ message: error });
+  }
+});
+
+module.exports = router;
