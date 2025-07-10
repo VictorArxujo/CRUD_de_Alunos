@@ -7,7 +7,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use("/aluno", alunoRouter);
 
-DB_PASS = "6a9uNW3T0eKDuDyN";
+DB_PASS = "";
 
 mongoose
   .connect(`mongodb+srv://victor:${DB_PASS}@cluster0.homdfjz.mongodb.net/`)
